@@ -34,6 +34,10 @@ class Actions {
             'open_url'     => __( 'Open URL', 'interactive-geo-maps' ),
             /* translators: "Open URL (new tab)" is one of the options for "Click Action" */
             'open_url_new' => __( 'Open URL (new tab)', 'interactive-geo-maps' ),
+            /* translators: "Display content below" is one of the options for "Click Action" */
+            'display_content_below' => __( 'Display content below', 'interactive-geo-maps' ),
+            /* translators: "Display content right" is one of the options for "Click Action" */
+            'display_content_right' => __( 'Display content right', 'interactive-geo-maps' ),
         ];
 
         return $actions;

@@ -10,6 +10,34 @@
 	/* overflow:hidden; */
 }
 
+.igm_action_content {
+	display: none;
+	width: 100%;
+	margin-top: 16px;
+}
+
+.map_wrapper.igm_action_content-right {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	align-items: flex-start;
+}
+
+.map_wrapper.igm_action_content-right .map_box {
+	flex: 1 1 60%;
+}
+
+.map_wrapper.igm_action_content-right .igm_action_content {
+	display: block;
+	flex: 1 1 35%;
+	margin-top: 0;
+	min-width: 240px;
+}
+
+.map_wrapper.igm_action_content-below .igm_action_content {
+	display: block;
+}
+
 .map_wrapper .map_aspect_ratio {
 	max-width: 100%;
 	width: 100%;

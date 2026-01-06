@@ -3577,6 +3577,32 @@ iMapsManager.prepareURL = function (str) {
   return str;
 };
 
+iMapsManager.renderActionContent = function (id, dataContext, position) {
+  var wrapper = document.getElementById('map_wrapper_' + id),
+    container = document.getElementById('map_action_content_' + id);
+
+  if (!wrapper || !container) {
+    return;
+  }
+
+  wrapper.classList.remove('igm_action_content-below', 'igm_action_content-right');
+
+  if (!dataContext.content) {
+    container.innerHTML = '';
+    container.style.display = 'none';
+    return;
+  }
+
+  container.innerHTML = dataContext.content;
+  container.style.display = 'block';
+
+  if (position === 'right') {
+    wrapper.classList.add('igm_action_content-right');
+  } else {
+    wrapper.classList.add('igm_action_content-below');
+  }
+};
+
 iMapsManager.setupHitEvents = function (id, ev) {
   var im = this,
     data = im.maps[id].data,
@@ -3708,6 +3734,16 @@ iMapsManager.setupHitEvents = function (id, ev) {
     document.location = dataContext.content;
   } else if (dataContext.action === 'open_url_new' && dataContext.content !== '') {
     window.open(dataContext.content);
+  } else if (
+    dataContext.action === 'display_content_below' ||
+    dataContext.action === 'display_content_right'
+  ) {
+    iMapsManager.renderActionContent(
+      id,
+      dataContext,
+      dataContext.action === 'display_content_right' ? 'right' : 'below'
+    );
+    return;
   } // custom
   else if (dataContext.action && dataContext.action.includes('custom')) {
     customActionName = dataContext.action + '_' + dataContext.mapID;

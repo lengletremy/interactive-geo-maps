@@ -481,7 +481,8 @@ class Map {
 							<div class="map_render map_loading" id="map_%6$s"></div>
 						</div>
 					</div>
-				</div>%7$s
+				</div>
+				<div class="igm_action_content" id="map_action_content_%6$s" aria-live="polite"></div>%7$s
 			</div>',
             $map_classes,
             $max_width . 'px',
