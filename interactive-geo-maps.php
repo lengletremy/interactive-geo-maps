@@ -25,11 +25,12 @@ if ( !defined( 'WPINC' ) ) {
 if ( version_compare( PHP_VERSION, '7.0', '<' ) ) {
     return;
 }
-// Freemius logic
-if ( function_exists( __NAMESPACE__ . '\\igmfreemiusinit' ) ) {
-    igmfreemiusinit()->set_basename( false, __FILE__ );
-} else {
-    if ( !function_exists( __NAMESPACE__ . '\\igmfreemiusinit' ) ) {
+// Freemius logic (disabled by default to prevent licensing locks).
+$use_freemius = apply_filters( 'igm_use_freemius', false );
+if ( $use_freemius ) {
+    if ( function_exists( __NAMESPACE__ . '\\igmfreemiusinit' ) ) {
+        igmfreemiusinit()->set_basename( false, __FILE__ );
+    } elseif ( !function_exists( __NAMESPACE__ . '\\igmfreemiusinit' ) ) {
         // Create a helper function for easy SDK access.
         function igmfreemiusinit() {
             global $igmfreemiusinit;
@@ -104,27 +105,28 @@ if ( function_exists( __NAMESPACE__ . '\\igmfreemiusinit' ) ) {
             ] );
         } );
     }
-    if ( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
-        require_once dirname( __FILE__ ) . '/vendor/autoload.php';
-    }
-    if ( class_exists( \Saltus\WP\Framework\Core::class ) ) {
-        /*
-         * The path to the plugin root directory is mandatory,
-         * so it loads the models from a subdirectory.
-         */
-        $framework = new \Saltus\WP\Framework\Core(dirname( __FILE__ ));
-        $framework->register();
-        /**
-         * Initialize plugin
-         */
-        add_action( 'plugins_loaded', function () use($framework) {
-            $plugin = new Core(
-                'interactive-geo-maps',
-                '1.6.27',
-                __FILE__,
-                $framework
-            );
-            $plugin->init();
-        } );
-    }
+}
+
+if ( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
+    require_once dirname( __FILE__ ) . '/vendor/autoload.php';
+}
+if ( class_exists( \Saltus\WP\Framework\Core::class ) ) {
+    /*
+     * The path to the plugin root directory is mandatory,
+     * so it loads the models from a subdirectory.
+     */
+    $framework = new \Saltus\WP\Framework\Core(dirname( __FILE__ ));
+    $framework->register();
+    /**
+     * Initialize plugin
+     */
+    add_action( 'plugins_loaded', function () use($framework) {
+        $plugin = new Core(
+            'interactive-geo-maps',
+            '1.6.27',
+            __FILE__,
+            $framework
+        );
+        $plugin->init();
+    } );
 }
