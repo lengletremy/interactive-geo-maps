@@ -2489,12 +2489,7 @@ iMapsManager.pushRegionSeries = function (id, data, groupHover) {
   // active state
   if (data.regionActiveState && im.bool(data.regionActiveState.enabled)) {
     active = regionTemplate.states.create('active');
-
-    if (data.regionActiveState.source === 'custom') {
-      active.properties.fill = data.regionActiveState.fill;
-    } else {
-      active.propertyFields.fill = 'hover';
-    }
+    active.propertyFields.fill = 'hover';
   }
   // highlight - for group hover
   highlight = regionTemplate.states.create('highlight');
@@ -3579,7 +3574,9 @@ iMapsManager.prepareURL = function (str) {
 
 iMapsManager.renderActionContent = function (id, dataContext, position) {
   var wrapper = document.getElementById('map_wrapper_' + id),
-    container = document.getElementById('map_action_content_' + id);
+    container = document.getElementById('map_action_content_' + id),
+    mapData = iMaps.maps[id] ? iMaps.maps[id].data : null,
+    globalContent = '';
 
   if (!wrapper || !container) {
     return;
@@ -3593,7 +3590,21 @@ iMapsManager.renderActionContent = function (id, dataContext, position) {
     return;
   }
 
-  container.innerHTML = dataContext.content;
+  if (
+    position === 'right' &&
+    mapData &&
+    typeof mapData.globalContent === 'string' &&
+    mapData.globalContent.trim() !== ''
+  ) {
+    globalContent =
+      '<div class="igm_action_content_global">' +
+      mapData.globalContent +
+      '</div><div class="igm_action_content_region">' +
+      dataContext.content +
+      '</div>';
+  }
+
+  container.innerHTML = globalContent || dataContext.content;
   container.style.display = 'block';
 
   if (position === 'right') {
@@ -5361,6 +5372,11 @@ iMapsManager.triggerOnReady = function (id, data) {
     if (!isCustom) {
       iMapsManager.select(id, myParam, true, true);
     }
+  } else if (!isCustom) {
+    let defaultRegion = iMapsManager.getDefaultRegionId(data);
+    if (defaultRegion) {
+      iMapsManager.select(id, defaultRegion, true, true);
+    }
   }
 };
 
@@ -5379,7 +5395,43 @@ iMapsManager.triggerOnAppeared = function (id, data) {
         iMapsManager.select(id, myParam, true, true);
       }, 500);
     }
+  } else if (isCustom) {
+    let defaultRegion = iMapsManager.getDefaultRegionId(data);
+    if (defaultRegion) {
+      setTimeout(function () {
+        iMapsManager.select(id, defaultRegion, true, true);
+      }, 500);
+    }
   }
+};
+
+iMapsManager.getDefaultRegionId = function (data) {
+  if (!data) {
+    return false;
+  }
+
+  if (typeof data.defaultRegion !== 'undefined' && data.defaultRegion !== '') {
+    return data.defaultRegion;
+  }
+
+  if (!Array.isArray(data.regions) || data.regions.length === 0) {
+    return false;
+  }
+
+  var firstRegion = data.regions.find(function (region) {
+    return (
+      region &&
+      typeof region.id !== 'undefined' &&
+      region.id !== null &&
+      region.id !== ''
+    );
+  });
+
+  if (!firstRegion) {
+    return false;
+  }
+
+  return firstRegion.originalID || firstRegion.id;
 };
 
 /**
