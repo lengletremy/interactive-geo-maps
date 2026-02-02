@@ -5388,6 +5388,29 @@ iMapsManager.triggerOnAppeared = function (id, data) {
   } else if (isCustom) {
     iMapsManager.applyDefaultSelection(id, data, 500);
   }
+
+  if (typeof data.defaultRegion !== 'undefined' && data.defaultRegion !== '') {
+    return data.defaultRegion;
+  }
+
+  if (!Array.isArray(data.regions) || data.regions.length === 0) {
+    return false;
+  }
+
+  var firstRegion = data.regions.find(function (region) {
+    return (
+      region &&
+      typeof region.id !== 'undefined' &&
+      region.id !== null &&
+      region.id !== ''
+    );
+  });
+
+  if (!firstRegion) {
+    return false;
+  }
+
+  return firstRegion.originalID || firstRegion.id;
 };
 
 iMapsManager.getDefaultRegionId = function (data) {
