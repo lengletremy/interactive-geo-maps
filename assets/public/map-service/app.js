@@ -5396,6 +5396,21 @@ iMapsManager.triggerOnAppeared = function (id, data) {
       }, 500);
     }
   }
+
+  var firstRegion = data.regions.find(function (region) {
+    return (
+      region &&
+      typeof region.id !== 'undefined' &&
+      region.id !== null &&
+      region.id !== ''
+    );
+  });
+
+  if (!firstRegion) {
+    return false;
+  }
+
+  return firstRegion.originalID || firstRegion.id;
 };
 
 iMapsManager.getDefaultRegionId = function (data) {
