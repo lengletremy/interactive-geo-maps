@@ -2487,10 +2487,8 @@ iMapsManager.pushRegionSeries = function (id, data, groupHover) {
   }
 
   // active state
-  if (data.regionActiveState && im.bool(data.regionActiveState.enabled)) {
-    active = regionTemplate.states.create('active');
-    active.propertyFields.fill = 'hover';
-  }
+  active = regionTemplate.states.create('active');
+  active.propertyFields.fill = 'hover';
   // highlight - for group hover
   highlight = regionTemplate.states.create('highlight');
   highlight.propertyFields.fill = 'hover';
@@ -4300,12 +4298,7 @@ iMapsManager.select = function (id, elID, forceFixedTooltip, showTooltip, series
                 }
               }
 
-              // if we have the active state, use it instead
-              if (data.regionActiveState && im.bool(data.regionActiveState.enabled)) {
-                select.setState('active');
-              } else {
-                select.setState('highlight');
-              }
+              select.setState('active');
 
               selected.push(select);
             }
@@ -5403,6 +5396,21 @@ iMapsManager.triggerOnAppeared = function (id, data) {
       }, 500);
     }
   }
+
+  var firstRegion = data.regions.find(function (region) {
+    return (
+      region &&
+      typeof region.id !== 'undefined' &&
+      region.id !== null &&
+      region.id !== ''
+    );
+  });
+
+  if (!firstRegion) {
+    return false;
+  }
+
+  return firstRegion.originalID || firstRegion.id;
 };
 
 iMapsManager.getDefaultRegionId = function (data) {
