@@ -5366,10 +5366,7 @@ iMapsManager.triggerOnReady = function (id, data) {
       iMapsManager.select(id, myParam, true, true);
     }
   } else if (!isCustom) {
-    let defaultRegion = iMapsManager.getDefaultRegionId(data);
-    if (defaultRegion) {
-      iMapsManager.select(id, defaultRegion, true, true);
-    }
+    iMapsManager.applyDefaultSelection(id, data);
   }
 };
 
@@ -5389,12 +5386,15 @@ iMapsManager.triggerOnAppeared = function (id, data) {
       }, 500);
     }
   } else if (isCustom) {
-    let defaultRegion = iMapsManager.getDefaultRegionId(data);
-    if (defaultRegion) {
-      setTimeout(function () {
-        iMapsManager.select(id, defaultRegion, true, true);
-      }, 500);
-    }
+    iMapsManager.applyDefaultSelection(id, data, 500);
+  }
+
+  if (typeof data.defaultRegion !== 'undefined' && data.defaultRegion !== '') {
+    return data.defaultRegion;
+  }
+
+  if (!Array.isArray(data.regions) || data.regions.length === 0) {
+    return false;
   }
 
   var firstRegion = data.regions.find(function (region) {
@@ -5440,6 +5440,52 @@ iMapsManager.getDefaultRegionId = function (data) {
   }
 
   return firstRegion.originalID || firstRegion.id;
+};
+
+iMapsManager.applyDefaultSelection = function (id, data, delay) {
+  var defaultRegion = iMapsManager.getDefaultRegionId(data);
+
+  if (!defaultRegion) {
+    return;
+  }
+
+  var applySelection = function () {
+    iMapsManager.select(id, defaultRegion, true, true);
+
+    if (data && iMapsManager.bool(data.admin)) {
+      return;
+    }
+
+    setTimeout(function () {
+      var selected = iMapsManager.getSelected(id);
+
+      if (Array.isArray(selected)) {
+        selected = selected[0];
+      }
+
+      if (!selected || !selected.action || selected.action === 'none') {
+        return;
+      }
+
+      if (
+        selected.action === 'display_content_below' ||
+        selected.action === 'display_content_right'
+      ) {
+        iMapsManager.renderActionContent(
+          id,
+          selected,
+          selected.action === 'display_content_right' ? 'right' : 'below'
+        );
+      }
+    }, 0);
+  };
+
+  if (delay) {
+    setTimeout(applySelection, delay);
+    return;
+  }
+
+  applySelection();
 };
 
 /**
