@@ -642,6 +642,12 @@ function igmaps_model() {
                                     ],
                                 ],
                             ],
+                            'defaultRegion'     => [
+                                'type'    => 'text',
+                                'title'   => __( 'Default Region', 'interactive-geo-maps' ),
+                                'desc'    => __( 'Region code to select automatically on load. Leave blank to use the first available region.', 'interactive-geo-maps' ),
+                                'default' => '',
+                            ],
 
                             'onlyIncludeActive' => [
                                 'type'    => 'switcher',
