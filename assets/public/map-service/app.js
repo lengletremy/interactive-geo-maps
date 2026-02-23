@@ -5681,7 +5681,7 @@ iMapsManager.getDefaultRegionId = function (data) {
     return false;
   }
 
-  if (!im.bool(data.selectDefaultRegion)) {
+  if (!iMapsManager.bool(data.selectDefaultRegion)) {
     return false;
   }
 
